@@ -68,7 +68,7 @@ router.get('/:id/qr', auth, async (req, res) => {
         const session = await Session.findById(req.params.id);
         if (!session) return res.status(404).json({ error: 'Session not found' });
 
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL;
         const joinUrl = `${clientUrl}/join/${session._id}`;
         const qrDataUrl = await QRCode.toDataURL(joinUrl, {
             width: 400,
