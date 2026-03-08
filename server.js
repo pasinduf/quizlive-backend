@@ -11,7 +11,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
@@ -22,8 +22,7 @@ app.set('io', io);
 // Middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    optionsSuccessStatus: 200,
+    origin: process.env.CLIENT_URL,
   }),
 );
 app.use(express.json());
