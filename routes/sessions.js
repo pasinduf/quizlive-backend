@@ -3,9 +3,10 @@ const router = express.Router();
 const QRCode = require('qrcode');
 const Session = require('../models/Session');
 const Quiz = require('../models/Quiz');
+const auth = require('../middleware/auth');
 
 // POST /api/sessions - Create a session
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const { quizId } = req.body;
         if (!quizId) {
@@ -39,7 +40,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/sessions - List all sessions
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const sessions = await Session.find()
             .populate('quizId', 'title')
@@ -62,7 +63,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /api/sessions/:id/qr - Get QR code for session
-router.get('/:id/qr', async (req, res) => {
+router.get('/:id/qr', auth, async (req, res) => {
     try {
         const session = await Session.findById(req.params.id);
         if (!session) return res.status(404).json({ error: 'Session not found' });
@@ -82,7 +83,7 @@ router.get('/:id/qr', async (req, res) => {
 });
 
 // POST /api/sessions/:id/start - Start session
-router.post('/:id/start', async (req, res) => {
+router.post('/:id/start', auth, async (req, res) => {
     try {
         const session = await Session.findByIdAndUpdate(
             req.params.id,
@@ -102,7 +103,7 @@ router.post('/:id/start', async (req, res) => {
 });
 
 // POST /api/sessions/:id/end - End session
-router.post('/:id/end', async (req, res) => {
+router.post('/:id/end', auth, async (req, res) => {
     try {
         const session = await Session.findByIdAndUpdate(
             req.params.id,
@@ -122,7 +123,7 @@ router.post('/:id/end', async (req, res) => {
 });
 
 // DELETE /api/sessions/:id - Delete a session
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const session = await Session.findById(req.params.id);
         if (!session) return res.status(404).json({ error: 'Session not found' });

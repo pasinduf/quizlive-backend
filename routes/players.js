@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const Player = require('../models/Player');
 const { uploadToCloudinary } = require('../config/cloudinary');
+const auth = require('../middleware/auth');
 
 // Configure multer for memory storage
 const upload = multer({
@@ -18,7 +19,7 @@ const upload = multer({
 });
 
 // POST /api/players - Register a new player
-router.post('/', upload.single('profilePicture'), async (req, res) => {
+router.post('/', auth, upload.single('profilePicture'), async (req, res) => {
     try {
         const { playerName, playerCode } = req.body;
 
@@ -56,7 +57,7 @@ router.post('/', upload.single('profilePicture'), async (req, res) => {
 });
 
 // GET /api/players - List all players
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const players = await Player.find().sort({ createdAt: -1 });
         res.json(players);
@@ -66,7 +67,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/players/:id - Get player by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const player = await Player.findById(req.params.id);
         if (!player) return res.status(404).json({ error: 'Player not found' });
@@ -102,7 +103,7 @@ router.post('/validate', async (req, res) => {
 });
 
 // PUT /api/players/:id - Update player details
-router.put('/:id', upload.single('profilePicture'), async (req, res) => {
+router.put('/:id', auth, upload.single('profilePicture'), async (req, res) => {
     try {
         const { playerName, playerCode } = req.body;
         const player = await Player.findById(req.params.id);
@@ -139,7 +140,7 @@ router.put('/:id', upload.single('profilePicture'), async (req, res) => {
 });
 
 // DELETE /api/players/:id - Delete a player
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const player = await Player.findByIdAndDelete(req.params.id);
         if (!player) return res.status(404).json({ error: 'Player not found' });

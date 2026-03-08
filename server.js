@@ -26,6 +26,7 @@ app.use(cors({
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/players', require('./routes/players'));
 app.use('/api/quizzes', require('./routes/quizzes'));
 app.use('/api/questions', require('./routes/questions'));

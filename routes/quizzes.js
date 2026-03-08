@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/Quiz');
+const auth = require('../middleware/auth');
 
 // POST /api/quizzes - Create a quiz
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const { title, createdBy } = req.body;
         if (!title) {
@@ -18,7 +19,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/quizzes - List all quizzes with session status
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const quizzes = await Quiz.aggregate([
             {
@@ -65,7 +66,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/quizzes/:id - Get a quiz
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id);
         if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
@@ -76,7 +77,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // DELETE /api/quizzes/:id - Delete a quiz
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const quiz = await Quiz.findByIdAndDelete(req.params.id);
         if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
