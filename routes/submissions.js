@@ -4,6 +4,7 @@ const Submission = require('../models/Submission');
 const Question = require('../models/Question');
 const Session = require('../models/Session');
 const Player = require('../models/Player');
+const auth = require('../middleware/auth');
 
 // POST /api/submissions - Submit quiz answers
 router.post('/', async (req, res) => {
@@ -78,7 +79,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/submissions/session/:sessionId - Get submissions for a session
-router.get('/session/:sessionId', async (req, res) => {
+router.get('/session/:sessionId', auth, async (req, res) => {
     try {
         const submissions = await Submission.find({ sessionId: req.params.sessionId })
             .populate('playerId', 'playerName profilePicture playerCode')
@@ -101,7 +102,7 @@ router.get('/check/:sessionId/:playerId', async (req, res) => {
 });
 
 // GET /api/submissions/leaderboard/:sessionId - Get leaderboard
-router.get('/leaderboard/:sessionId', async (req, res) => {
+router.get('/leaderboard/:sessionId', auth, async (req, res) => {
     try {
         const submissions = await Submission.find({ sessionId: req.params.sessionId })
             .populate('playerId', 'playerName profilePicture playerCode')

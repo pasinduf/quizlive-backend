@@ -20,12 +20,16 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middleware
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    optionsSuccessStatus: 200,
+  }),
+);
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/players', require('./routes/players'));
 app.use('/api/quizzes', require('./routes/quizzes'));
 app.use('/api/questions', require('./routes/questions'));
@@ -41,7 +45,7 @@ app.get('/api/health', (req, res) => {
 setupSocketHandlers(io);
 
 // Connect to MongoDB and start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 const MONGODB_URI = process.env.MONGODB_URI
 
 mongoose.connect(MONGODB_URI)
