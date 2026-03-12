@@ -3,6 +3,7 @@ const router = express.Router();
 const QRCode = require('qrcode');
 const Session = require('../models/Session');
 const Quiz = require('../models/Quiz');
+const Question = require('../models/Question');
 const auth = require('../middleware/auth');
 
 // POST /api/sessions - Create a session
@@ -85,12 +86,16 @@ router.get('/:id/qr', auth, async (req, res) => {
 // POST /api/sessions/:id/start - Start session
 router.post('/:id/start', auth, async (req, res) => {
     try {
-        const session = await Session.findByIdAndUpdate(
-            req.params.id,
-            { status: 'active', startTime: new Date() },
-            { new: true }
-        );
+        const session = await Session.findById(req.params.id);
         if (!session) return res.status(404).json({ error: 'Session not found' });
+
+        // Count current questions for the quiz
+        const totalQuestions = await Question.countDocuments({ quizId: session.quizId });
+
+        session.status = 'active';
+        session.startTime = new Date();
+        session.totalQuestions = totalQuestions;
+        await session.save();
 
         // Broadcast via Socket.IO
         const io = req.app.get('io');
@@ -98,6 +103,7 @@ router.post('/:id/start', auth, async (req, res) => {
 
         res.json(session);
     } catch (err) {
+        console.error('Error starting session:', err);
         res.status(500).json({ error: 'Failed to start session' });
     }
 });

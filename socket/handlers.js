@@ -1,4 +1,5 @@
 const Session = require('../models/Session');
+const Question = require('../models/Question');
 
 function setupSocketHandlers(io) {
     io.on('connection', (socket) => {
@@ -26,13 +27,19 @@ function setupSocketHandlers(io) {
         // Host starts the quiz session
         socket.on('start-session', async ({ sessionId }) => {
             try {
-                await Session.findByIdAndUpdate(sessionId, {
-                    status: 'active',
-                    startTime: new Date(),
-                });
-                io.to(sessionId).emit('session-started', { sessionId });
-                console.log(`🚀 Session ${sessionId} started`);
+                const session = await Session.findById(sessionId);
+                if (session) {
+                    const totalQuestions = await Question.countDocuments({ quizId: session.quizId });
+                    session.status = 'active';
+                    session.startTime = new Date();
+                    session.totalQuestions = totalQuestions;
+                    await session.save();
+
+                    io.to(sessionId).emit('session-started', { sessionId });
+                    console.log(`🚀 Session ${sessionId} started with ${totalQuestions} questions`);
+                }
             } catch (err) {
+                console.error('Error starting session via socket:', err);
                 socket.emit('error', { message: 'Failed to start session' });
             }
         });
