@@ -19,6 +19,10 @@ const sessionSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    totalQuestions: {
+        type: Number,
+        default: 0,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
