@@ -24,10 +24,14 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middleware
+const corsOptions = {
+  origin: [
+    process.env.CLIENT_URL, //  production domain
+    /^https:\/\/.*--quizlive\.netlify\.app$/, // Matches any "anything--quizlive.netlify.app"
+  ],
+};
 app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-  }),
+  cors(corsOptions),
 );
 app.use(express.json());
 
