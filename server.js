@@ -11,8 +11,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    //origin: process.env.CLIENT_URL,
+    origin: [
+      process.env.CLIENT_URL, //  production domain
+      /^https:\/\/.*--quizlive\.netlify\.app$/, // Matches any "anything--quizlive.netlify.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 
